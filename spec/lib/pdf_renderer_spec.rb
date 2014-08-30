@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe PdfRenderer do
-  let(:r) { FactoryGirl.create(:maximal_registrant, :locale=>'es') }
+  let(:r) { r=maximal_registrant; r.locale='es'; r }
   let(:pdfg) { PdfRenderer.new(r) }
   
   describe "initialize(reg)" do
@@ -15,9 +15,6 @@ describe PdfRenderer do
     end
     it "sets registrant" do
       pdfg.registrant.should == r
-    end
-    it "sets state" do
-      pdfg.state.should == r.home_state
     end
     it "sets logo_image_path" do
       pdfg.logo_image_path.should_not be_nil
@@ -36,16 +33,14 @@ describe PdfRenderer do
     end
     context "with a whitelabel partner" do
       before(:each) do
-        r.partner.stub(:whitelabeled?).and_return(true)
-        r.partner.stub(:pdf_logo_present?).and_return(false)
+        r.stub(:partner_absolute_pdf_logo).and_return('')
       end
       it "returns the default path when pdf_logo isn't present" do
         pdfg.logo_image_path.should == default_path
       end
       context "when the pdf_logo is present" do
         before(:each) do
-          r.partner.stub(:pdf_logo_present?).and_return(true)
-          r.partner.stub(:absolute_pdf_logo_path).and_return"path"
+          r.stub(:partner_absolute_pdf_logo_path).and_return"path"
         end
         it "returns the partner PDF logo" do
           pdfg.logo_image_path.should == "path"
@@ -62,7 +57,7 @@ describe PdfRenderer do
   end
   
   describe "render_to_string('registrants/registrant_pdf', :layout => 'layouts/nvra')" do
-    let(:registrant) { FactoryGirl.create(:maximal_registrant) }
+    let(:registrant) { maximal_registrant }
     let(:pdfg) { PdfRenderer.new(registrant) }
     let(:doc) { Nokogiri::XML(pdfg.render_to_string('registrants/registrant_pdf', :layout=>'layouts/nvra')) }
     it "should output us citizen" do
@@ -108,7 +103,7 @@ describe PdfRenderer do
                     doc.css('#home_address_city .value').inner_html
     end
     it "should output home address state" do
-      assert_equal  registrant.home_state.abbreviation,
+      assert_equal  registrant.home_state_id,
                     doc.css('#home_address_state .value').inner_html
     end
     it "should output home address zip code" do
@@ -125,7 +120,7 @@ describe PdfRenderer do
                     doc.css('#mailing_address_city .value').inner_html
     end
     it "should output mailing address state" do
-      assert_equal  registrant.mailing_state.abbreviation,
+      assert_equal  registrant.mailing_state_id,
                     doc.css('#mailing_address_state .value').inner_html
     end
     it "should output mailing address zip code" do
@@ -146,7 +141,7 @@ describe PdfRenderer do
                     doc.css('#id_number .value').inner_html
     end
     it "should output party" do
-      assert_equal  registrant.party.to_s,
+      assert_equal  registrant.english_party_name.to_s,
                     doc.css('#party .value').inner_html.strip
     end
     
@@ -184,7 +179,7 @@ describe PdfRenderer do
                     doc.css('#prev_address_city .value').inner_html
     end
     it "should output previous address state" do
-      assert_equal  registrant.prev_state.abbreviation,
+      assert_equal  registrant.prev_state_id,
                     doc.css('#prev_address_state .value').inner_html
     end
     it "should output previous address zip code" do
@@ -198,35 +193,17 @@ describe PdfRenderer do
         pdfg = PdfRenderer.new(registrant) 
         doc = Nokogiri::XML(pdfg.render_to_string('registrants/registrant_pdf', :layout=>'layouts/nvra'))
         
-        assert_equal  registrant.race,
+        assert_equal  registrant.pdf_english_race,
                       doc.css('#race .value').inner_html.strip
       end
       
-      it "should not output race as decline to state" do
-        registrant = FactoryGirl.create(:maximal_registrant, :race => "Decline to State")
-        registrant.stub(:requires_race?) { true }
-        pdfg = PdfRenderer.new(registrant) 
-        doc = Nokogiri::XML(pdfg.render_to_string('registrants/registrant_pdf', :layout=>'layouts/nvra'))
-        
-        assert_equal  "",
-                      doc.css('#race .value').inner_html.strip
-      end
-      it "should not output race if it is not required" do
-        registrant = FactoryGirl.create(:maximal_registrant, :race => "Multi-racial")
-        registrant.stub(:requires_race?) { false }
-        pdfg = PdfRenderer.new(registrant) 
-        doc = Nokogiri::XML(pdfg.render_to_string('registrants/registrant_pdf', :layout=>'layouts/nvra'))
-        
-        assert_equal  "",
-                      doc.css('#race .value').inner_html.strip
-      end
-    end
+     end
     
     describe "barcode" do
-      let(:registrant) { FactoryGirl.build(:maximal_registrant) }
+      let(:registrant) { maximal_registrant }
       let(:pdfg) { PdfRenderer.new(registrant) }
       before(:each) do
-        registrant.id = 42_000_000
+        registrant.pdf_barcode = "*RTV-0P07EO*"
         doc = Nokogiri::XML(pdfg.render_to_string('registrants/registrant_pdf', :layout=>'layouts/nvra'))
       end
   

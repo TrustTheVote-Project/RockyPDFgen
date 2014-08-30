@@ -1,0 +1,11 @@
+pdf:
+  nvra:
+    page1:
+      default_logo: 'pdf/rtvlogo.gif'
+      other_block:
+        instructions_url: "http://www.rockthevote.com/registration/instructions/<STATE>-<LOCALE>.html"
+
+
+clients:
+  - id: rtv
+    key: cb02de017d55bd4e579bb98a73bb889a269d7bc4
