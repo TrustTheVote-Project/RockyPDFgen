@@ -75,7 +75,7 @@ module Rockypdfs
     
     config.assets.paths << Rails.root.join("app", "assets", "fonts")
 
-    config.assets.precompile += %w(  nvra.css )
+    config.assets.precompile += %w( reset.css nvra.css )
     config.assets.precompile += ["nvra/locales/*.css"]
     config.assets.precompile << /\.(?:svg|eot|woff|ttf)$/
 
