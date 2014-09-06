@@ -42,7 +42,8 @@ public/system/*
 public/partners
 reg_colorado.yml
 db/*.sqlite3
-rocky_test
+rockypdfgen_test
+rockypdfgen_development
 # Ignore application configuration
 /config/application.yml
 

@@ -35,9 +35,6 @@ GEM
     activesupport (3.2.18)
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
-    airbrake (4.0.0)
-      builder
-      multi_json
     arel (3.0.3)
     assert_difference (0.5.0)
     asset_sync (1.1.0)
@@ -168,7 +165,6 @@ GEM
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
     netrc (0.7.7)
-    newrelic_rpm (3.6.0.83)
     nokogiri (1.5.9)
     ntlm-http (0.1.1)
     paperclip (3.5.4)
@@ -280,7 +276,6 @@ PLATFORMS
 
 DEPENDENCIES
   aasm (= 3.0.16)
-  airbrake
   assert_difference
   asset_sync
   authlogic (= 3.3.0)
@@ -301,7 +296,6 @@ DEPENDENCIES
   json
   ledermann-rails-settings
   mechanize (= 2.7.1)
-  newrelic_rpm (= 3.6.0.83)
   nokogiri (= 1.5.9)
   paperclip (~> 3.0)
   rack-robustness
