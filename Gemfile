@@ -57,6 +57,9 @@ group :development, :test do
   gem "assert_difference"
 end
 
+group :staging do
+  gem "sqlite3"
+end
 
 group :assets do
   gem 'therubyracer'
