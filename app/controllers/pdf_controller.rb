@@ -5,7 +5,7 @@ class PdfController < ActionController::Base
       r = Registrant.new
       r.assign_attributes(params[:registrant])
       if r.valid?
-        r.generate_pdf
+        r.generate_pdf(true)
         render json: {"generated" => r.pdf_path}.to_json
       else
         render json: r.errors.to_json
