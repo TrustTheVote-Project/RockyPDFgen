@@ -8,7 +8,7 @@ class PdfController < ActionController::Base
         r.generate_pdf(true)
         render json: {"generated" => r.pdf_path}.to_json
       else
-        render json: r.errors.to_json
+        render json: r.errors.to_json, status: 400
       end
     end
   end
