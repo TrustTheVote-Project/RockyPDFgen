@@ -106,6 +106,7 @@ class Registrant
       
       I18n.locale = self.locale
       renderer = PdfRenderer.new(self)
+      
       pdf = WickedPdf.new.pdf_from_string(
         renderer.render_to_string(
           'registrants/registrant_pdf', 
