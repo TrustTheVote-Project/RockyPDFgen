@@ -29,7 +29,6 @@ gem 'wicked_pdf'
 
 gem 'rest-client'
 gem 'diffy'
-gem 'asset_sync'
 
 
 group :development, :test do
@@ -52,12 +51,11 @@ group :development, :test do
   
   # Pito:
   gem "hpricot", "0.8.6"
-  gem "sqlite3"
   
   gem "assert_difference"
 end
 
-group :staging do
+group :development, :staging, :test do
   gem "sqlite3"
 end
 
