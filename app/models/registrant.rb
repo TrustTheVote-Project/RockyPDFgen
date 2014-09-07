@@ -130,14 +130,21 @@ class Registrant
   def generate_pdf(force_write = false)
     html_string = registrant_to_html_string
     return false if !html_string
+    
     path = pdf_file_path
+    
+    self.class.write_pdf_from_html_string(html_string, pdf_file_path, self.locale, pdf_file_dir, force_write)
+    
+  end
+  
+  def self.write_pdf_from_html_string(html_string, path, locale, pdf_file_dir, force_write = false)
     if !File.exists?(path) || force_write
         pdf = WickedPdf.new.pdf_from_string(
         html_string,
         :disable_internal_links         => false,
         :disable_external_links         => false,
         :encoding => 'utf8',
-        :locale=>self.locale
+        :locale=>locale
       )      
       FileUtils.mkdir_p(pdf_file_dir)
       File.open(path, "w") do |f|
