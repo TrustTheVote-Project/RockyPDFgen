@@ -95,52 +95,76 @@ class Registrant
     end
   end
   
-  
-  
-  def generate_pdf(force_write = false)
+  def registrant_to_html_string
     return false if self.locale.nil? || self.home_state_id.nil?
     prev_locale = I18n.locale
     
+    
+    I18n.locale = self.locale
+    renderer = PdfRenderer.new(self)
+    
+    html_string = renderer.render_to_string(
+      'registrants/registrant_pdf', 
+      :layout => 'layouts/nvra',
+      :encoding => 'utf8',
+      :locale=>self.locale
+    )
+    I18n.locale = prev_locale
+    
+    return html_string    
+  end
+  
+  def generate_html(force_write = false)
+    html_string = registrant_to_html_string
+    return false if !html_string
+      
+    path = html_file_path
+    if !File.exists?(path) || force_write
+      FileUtils.mkdir_p(html_file_dir)
+      File.open(path, "w") do |f|
+        f << html_string.force_encoding('UTF-8')
+      end
+    end
+  end
+  
+  def generate_pdf(force_write = false)
+    html_string = registrant_to_html_string
+    return false if !html_string
     path = pdf_file_path
     if !File.exists?(path) || force_write
-      
-      I18n.locale = self.locale
-      renderer = PdfRenderer.new(self)
-      
-      pdf = WickedPdf.new.pdf_from_string(
-        renderer.render_to_string(
-          'registrants/registrant_pdf', 
-          :layout => 'layouts/nvra',
-          :encoding => 'utf8',
-          :locale=>self.locale
-        ),
+        pdf = WickedPdf.new.pdf_from_string(
+        html_string,
         :disable_internal_links         => false,
         :disable_external_links         => false,
         :encoding => 'utf8',
         :locale=>self.locale
-      )
-      
-      
+      )      
       FileUtils.mkdir_p(pdf_file_dir)
       File.open(path, "w") do |f|
         f << pdf.force_encoding('UTF-8')
       end
     end
-    I18n.locale = prev_locale
   end
   
   def to_param
     self.uid
   end
   
-  
+  def html_path(pdfpre = nil, file=false)
+    pdf_path(pdfpre, file).gsub(/\.pdf$/,'.html')
+  end
   def pdf_path(pdfpre = nil, file=false)
     "/#{file ? pdf_file_dir(pdfpre) : pdf_dir(pdfpre)}/#{to_param}.pdf"
   end
   
+  def html_file_dir(pdfpre = nil)
+    pdf_file_dir(pdfpre)
+  end
   def pdf_file_dir(pdfpre = nil)
     pdf_dir(pdfpre, false)
   end
+  
+  
   
   def pdf_dir(pdfpre = nil, url_format=true)
     if pdfpre
@@ -153,7 +177,11 @@ class Registrant
       end
     end
   end
-
+  
+  def html_file_path(pdfpre = nil)
+    dir = File.join(Rails.root, html_file_dir(pdfpre))
+    File.join(Rails.root, html_path(pdfpre, true))
+  end
   def pdf_file_path(pdfpre = nil)
     dir = File.join(Rails.root, pdf_file_dir(pdfpre))
     File.join(Rails.root, pdf_path(pdfpre, true))
