@@ -19,6 +19,8 @@ gem "rubyzip"
 
 gem "dotenv-rails"
 
+gem "resque"
+
 gem "haml"
 
 gem "rails-i18n"
